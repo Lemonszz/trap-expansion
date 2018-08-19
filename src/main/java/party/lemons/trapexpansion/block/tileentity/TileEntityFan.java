@@ -64,6 +64,7 @@ public class TileEntityFan extends TileEntity implements ITickable
 				float velY = speed * (facing.getYOffset() * distanceDecay);
 				float velZ = speed * (facing.getZOffset() * distanceDecay);
 
+				System.out.println(velX + " " + velY + " " + velZ);
 				if(velX != 0)
 					e.motionX += velX;
 
@@ -73,7 +74,6 @@ public class TileEntityFan extends TileEntity implements ITickable
 				if(velZ != 0)
 					e.motionZ += velZ;
 
-				e.velocityChanged =true;
 				e.fallDistance = Math.max(0, e.fallDistance - 1);
 			}
 		}
