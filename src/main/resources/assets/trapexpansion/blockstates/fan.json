@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "top": "blocks/furnace_top",
+      "side": "blocks/furnace_top",
+      "front":"trapexpansion:blocks/fan_front_off"
+    },
+    "model": "orientable",
+    "uvlock": true
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory":
+    {
+      "model": "orientable",
+      "transform": "forge:default-block"
+    },
+    "powered":
+    {
+      "true":{
+        "textures":{
+          "front": "trapexpansion:blocks/fan_front_on"
+        }
+      },
+      "false":{
+        "textures":{
+          "front": "trapexpansion:blocks/fan_front_off"
+        }
+      }
+    },
+    "facing":
+    {
+      "north":{
+        "y": 0
+      },
+      "south":{
+        "y": 180
+      },
+      "east":{
+        "y": 90
+      },
+      "west":{
+        "y": 270
+      },
+      "up":{
+        "x": 270
+      },
+      "down":{
+        "x": 90
+      }
+    }
+  }
+}

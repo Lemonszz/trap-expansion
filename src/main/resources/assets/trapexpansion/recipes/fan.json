@@ -1,0 +1,30 @@
+{
+  "result": {
+    "item": "trapexpansion:fan",
+    "count": 1
+  },
+  "pattern": [
+    "CWC",
+    "WIW",
+    "RWR"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "I": {
+      "type": "forge:ore_dict",
+      "ore" : "ingotIron"
+    },
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "C":{
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
+    },
+    "W":{
+      "type": "forge:ore_dict",
+      "ore": "plankWood"
+    }
+  }
+}

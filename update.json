@@ -1,0 +1,9 @@
+{
+  "homepage": "https://minecraft.curseforge.com/projects/trap-expansion",
+  "promos": {
+    "1.12.2-latest": "0.0.1"
+  },
+  "1.12.2": {
+    "0.0.1": "Exists"
+  }
+}

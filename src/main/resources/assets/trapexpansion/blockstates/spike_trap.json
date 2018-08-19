@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "variants": {
+    "inventory": {
+      "model": "trapexpansion:spike_out"
+    },
+      "out": {
+      "0": { "model": "trapexpansion:spike_in" },
+      "1": { "model": "trapexpansion:spike_mid" },
+      "2": { "model": "trapexpansion:spike_out" }
+    },
+    "direction": {
+      "down":  { "x": 180},
+      "up": {"x": 0}
+    }
+  }
+}

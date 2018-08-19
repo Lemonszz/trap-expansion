@@ -1,0 +1,16 @@
+[
+{
+  "modid": "trapexpansion",
+  "name": "Trap Expansion",
+  "description": "Trap Expansion Adds Some Vanilla Style Traps!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Lemons"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

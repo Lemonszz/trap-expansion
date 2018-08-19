@@ -1,0 +1,16 @@
+{
+  "forge_marker": 1,
+  "variants": {
+      "out": {
+      "0": { "model": "trapexpansion:spike_in" },
+      "1": { "model": "trapexpansion:spike_mid" },
+      "2": { "model": "trapexpansion:spike_out" }
+    },
+    "direction": {
+      "north":  { "y": 0, "x": 90 },
+      "south": {"y": 180, "x": 90},
+      "east": {"y": 90, "x": 90},
+      "west": {"y": 270, "x": 90}
+    }
+  }
+}
