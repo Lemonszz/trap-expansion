@@ -1,0 +1,30 @@
+{
+  "result": {
+    "item": "trapexpansion:detector",
+    "count": 1
+  },
+  "pattern": [
+    "CEC",
+    "RRQ",
+    "CCC"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "R": {
+      "type": "forge:ore_dict",
+      "ore": "dustRedstone"
+    },
+    "C":{
+      "type": "forge:ore_dict",
+      "ore": "cobblestone"
+    },
+    "Q":{
+      "type": "forge:ore_dict",
+      "ore": "gemQuartz"
+    },
+    "E":{
+      "type": "forge:ore_dict",
+      "ore": "enderpearl"
+    }
+  }
+}

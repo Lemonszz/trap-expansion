@@ -3,6 +3,7 @@ tile.trapexpansion.spike_trap.name=Spike Trap
 tile.trapexpansion.spike_trap_wall.name=Spike Trap
 tile.trapexpansion.slippery_stone.name=Slippery Stone
 tile.trapexpansion.fan.name=Fan
+tile.trapexpansion.detector.name=Detector
 
 trapexpansion.tip.spiderproof=Spider-Proof
 

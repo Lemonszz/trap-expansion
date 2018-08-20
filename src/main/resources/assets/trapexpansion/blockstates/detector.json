@@ -1,0 +1,55 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "textures": {
+      "bottom": "blocks/observer_back",
+      "side": "blocks/observer_side",
+      "top": "blocks/furnace_top",
+      "front":"trapexpansion:blocks/detector_front"
+    },
+    "model": "observer",
+    "uvlock": true
+  },
+  "variants": {
+    "normal": [{}],
+    "inventory":
+    {
+      "model": "observer",
+      "transform": "forge:default-block"
+    },
+    "powered":
+    {
+      "true":{
+        "textures":{
+          "bottom": "blocks/observer_back_lit"
+        }
+      },
+      "false":{
+        "textures":{
+          "bottom": "blocks/observer_back"
+        }
+      }
+    },
+    "facing":
+    {
+      "north":{
+        "y": 0
+      },
+      "south":{
+        "y": 180
+      },
+      "east":{
+        "y": 90
+      },
+      "west":{
+        "y": 270
+      },
+      "up":{
+        "x": 270
+      },
+      "down":{
+        "x": 90
+      }
+    }
+  }
+}

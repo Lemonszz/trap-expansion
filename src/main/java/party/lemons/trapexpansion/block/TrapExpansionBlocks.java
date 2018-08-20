@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import party.lemons.trapexpansion.TrapExpansion;
+import party.lemons.trapexpansion.block.tileentity.TileEntityDetector;
 import party.lemons.trapexpansion.block.tileentity.TileEntityFan;
 import party.lemons.trapexpansion.item.IModel;
 import party.lemons.trapexpansion.item.TrapExpansionItems;
@@ -33,6 +34,7 @@ public class TrapExpansionBlocks
 	public static final Block SPIKE_TRAP_WALL = Blocks.AIR;
 	public static final Block SLIPPERY_STONE = Blocks.AIR;
 	public static final Block FAN = Blocks.AIR;
+	public static final Block DETECTOR = Blocks.AIR;
 
 	@SubscribeEvent
 	public static void onRegisterBlock(RegistryEvent.Register<Block> event)
@@ -43,8 +45,10 @@ public class TrapExpansionBlocks
 		setProperties(registerBlock(r, new BlockSpikeTrapWall(), "spike_trap_wall"), 0.5F, 1.5F, 0.0F);
 		setProperties(registerBlock(r, new BlockSlipperyStone(), "slippery_stone"), 0.5F, 1.5F, 0.0F);
 		setProperties(registerBlock(r, new BlockFan(), "fan"), 0.5F, 1.5F, 0.0F);
+		setProperties(registerBlock(r, new BlockDetector(), "detector"), 0.5F, 1.5F, 0.0F);
 
 		GameRegistry.registerTileEntity(TileEntityFan.class, new ResourceLocation(TrapExpansion.MODID, "fan"));
+		GameRegistry.registerTileEntity(TileEntityDetector.class, new ResourceLocation(TrapExpansion.MODID, "detector"));
 	}
 
 	@SubscribeEvent

@@ -57,7 +57,7 @@ public class TileEntityFan extends TileEntity implements ITickable
 				double distance = e.getPosition().getDistance(pos.getX(), pos.getY(), pos.getZ());
 				float distanceDecay =  Math.max(0, (float) ((RANGE - distance) / (RANGE * 8)));
 				float speed = SPEED;
-				if(facing == EnumFacing.UP)
+				if(facing == EnumFacing.UP || facing == EnumFacing.DOWN)
 					speed += 1;
 
 				float velX = speed * (facing.getXOffset() * distanceDecay);
