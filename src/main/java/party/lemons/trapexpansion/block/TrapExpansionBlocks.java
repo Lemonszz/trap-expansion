@@ -1,92 +1,65 @@
 package party.lemons.trapexpansion.block;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.ObjectHolder;
+import party.lemons.lemonlib.block.BlockRegistry;
 import party.lemons.trapexpansion.TrapExpansion;
 import party.lemons.trapexpansion.block.tileentity.TileEntityDetector;
 import party.lemons.trapexpansion.block.tileentity.TileEntityFan;
-import party.lemons.trapexpansion.item.IModel;
-import party.lemons.trapexpansion.item.TrapExpansionItems;
-import party.lemons.trapexpansion.misc.TrapExpansionTab;
 
-import java.util.ArrayList;
-import java.util.List;
+import static net.minecraft.block.Block.Properties.create;
+
 
 /**
  * Created by Sam on 18/08/2018.
  */
-@Mod.EventBusSubscriber(modid = TrapExpansion.MODID)
-@GameRegistry.ObjectHolder(TrapExpansion.MODID)
+@Mod.EventBusSubscriber(modid = TrapExpansion.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@ObjectHolder(TrapExpansion.MODID)
 public class TrapExpansionBlocks
 {
-	public static List<Block> blockList = new ArrayList<>();
-
 	public static final Block SPIKE_TRAP = Blocks.AIR;
 	public static final Block SPIKE_TRAP_WALL = Blocks.AIR;
 	public static final Block SLIPPERY_STONE = Blocks.AIR;
 	public static final Block FAN = Blocks.AIR;
 	public static final Block DETECTOR = Blocks.AIR;
 
+	//TODO: move these to another class or something
+	public static TileEntityType<TileEntityDetector> DETECTOR_TYPE = null;
+	public static TileEntityType<TileEntityFan> FAN_TYPE = null;
+
 	@SubscribeEvent
 	public static void onRegisterBlock(RegistryEvent.Register<Block> event)
 	{
-		IForgeRegistry<Block> r = event.getRegistry();
+		BlockRegistry.setup(TrapExpansion.MODID, event.getRegistry());
 
-		setProperties(registerBlock(r, new BlockSpikeTrapVertical(), "spike_trap"), 0.5F, 1.5F, 0.0F);
-		setProperties(registerBlock(r, new BlockSpikeTrapWall(), "spike_trap_wall"), 0.5F, 1.5F, 0.0F);
-		setProperties(registerBlock(r, new BlockSlipperyStone(), "slippery_stone"), 0.5F, 1.5F, 0.0F);
-		setProperties(registerBlock(r, new BlockFan(), "fan"), 0.5F, 1.5F, 0.0F);
-		setProperties(registerBlock(r, new BlockDetector(), "detector"), 0.5F, 1.5F, 0.0F);
-
-		GameRegistry.registerTileEntity(TileEntityFan.class, new ResourceLocation(TrapExpansion.MODID, "fan"));
-		GameRegistry.registerTileEntity(TileEntityDetector.class, new ResourceLocation(TrapExpansion.MODID, "detector"));
+		BlockRegistry.registerBlock(new BlockSpikeTrapVertical(create(Material.IRON).hardnessAndResistance(0.5F, 1.5F)), "spike_trap");
+		BlockRegistry.registerBlock(new BlockSpikeTrapWall(create(Material.IRON).hardnessAndResistance(0.5F, 1.5F)), "spike_trap_wall");
+		BlockRegistry.registerBlock(new BlockSlipperyStone(create(Material.IRON).slipperiness(0.97F).sound(SoundType.GLASS).hardnessAndResistance(0.5F, 1.5F)), "slippery_stone");
+		BlockRegistry.registerBlock(new BlockFan(create(Material.IRON).hardnessAndResistance(0.5F, 1.5F)), "fan");
+		BlockRegistry.registerBlock(new BlockDetector(create(Material.IRON).hardnessAndResistance(0.5F, 1.5F)), "detector");
 	}
 
 	@SubscribeEvent
-	public static void onRegisterItem(RegistryEvent.Register<Item> event)
+	public static void onRegisterTileEntity(RegistryEvent.Register<TileEntityType<?>> event)
 	{
-		blockList.stream().filter(b-> (b instanceof IModel) && ((IModel) b).hasModel()).forEach(b -> registerItemBlock(event.getRegistry(), b));
-	}
+		TileEntityType<TileEntityDetector> detector = TileEntityType.Builder.create(TileEntityDetector::new).build(null);
+		detector.setRegistryName(new ResourceLocation(TrapExpansion.MODID, "detector"));
+		DETECTOR_TYPE = detector;
 
-	public static void registerItemBlock(IForgeRegistry<Item> registry, Block block)
-	{
-		ItemBlock ib = new ItemBlock(block);
-		ib.setRegistryName(block.getRegistryName());
+		TileEntityType<TileEntityFan> fan = TileEntityType.Builder.create(TileEntityFan::new).build(null);
+		fan.setRegistryName(new ResourceLocation(TrapExpansion.MODID, "fan"));
+		FAN_TYPE = fan;
 
-		TrapExpansionItems.itemList.add(ib);
-		registry.register(ib);
-	}
-
-	public static Block setProperties(Block block, float hardness, float resistence, float light)
-	{
-		return block.setHardness(hardness).setResistance(resistence).setLightLevel(light);
-	}
-
-	public static Block registerBlock(IForgeRegistry<Block> registry, Block block, String name)
-	{
-		return registerBlock(registry, block, name, TrapExpansion.MODID, true);
-	}
-
-	public static Block registerBlock(IForgeRegistry<Block> registry, Block block, String name, String domain, boolean addDomainToUnloc)
-	{
-		String unloc = addDomainToUnloc ? (domain + ".") : "";
-
-		block.setTranslationKey(unloc + name);
-		block.setRegistryName(domain, name);
-		block.setCreativeTab(TrapExpansionTab.INSTANCE);
-
-		blockList.add(block);
-		registry.register(block);
-
-		return block;
+		event.getRegistry().registerAll(
+			detector, fan
+		);
 	}
 }

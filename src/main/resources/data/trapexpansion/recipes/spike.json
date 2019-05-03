@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "trapexpansion:spike_trap",
+    "count": 1
+  },
+  "pattern": [
+    "I I",
+    "III",
+    "SRS"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag": "forge:ingots/iron"
+    },
+    "R": {
+      "tag" : "forge:dusts/redstone"
+    },
+    "S":{
+      "tag": "forge:stone"
+    }
+  }
+}

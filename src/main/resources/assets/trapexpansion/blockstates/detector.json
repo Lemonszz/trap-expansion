@@ -1,55 +1,16 @@
 {
-  "forge_marker": 1,
-  "defaults": {
-    "textures": {
-      "bottom": "blocks/observer_back",
-      "side": "blocks/observer_side",
-      "top": "blocks/furnace_top",
-      "front":"trapexpansion:blocks/detector_front"
-    },
-    "model": "observer",
-    "uvlock": true
-  },
   "variants": {
-    "normal": [{}],
-    "inventory":
-    {
-      "model": "observer",
-      "transform": "forge:default-block"
-    },
-    "powered":
-    {
-      "true":{
-        "textures":{
-          "bottom": "blocks/observer_back_lit"
-        }
-      },
-      "false":{
-        "textures":{
-          "bottom": "blocks/observer_back"
-        }
-      }
-    },
-    "facing":
-    {
-      "north":{
-        "y": 0
-      },
-      "south":{
-        "y": 180
-      },
-      "east":{
-        "y": 90
-      },
-      "west":{
-        "y": 270
-      },
-      "up":{
-        "x": 270
-      },
-      "down":{
-        "x": 90
-      }
-    }
+    "facing=up,powered=false": { "model": "trapexpansion:block/detector", "x": 270 },
+    "facing=down,powered=false": { "model": "trapexpansion:block/detector", "x": 90 },
+    "facing=north,powered=false": { "model": "trapexpansion:block/detector" },
+    "facing=south,powered=false": { "model": "trapexpansion:block/detector", "y": 180 },
+    "facing=west,powered=false": { "model": "trapexpansion:block/detector", "y": 270 },
+    "facing=east,powered=false": { "model": "trapexpansion:block/detector", "y": 90 },
+    "facing=up,powered=true": { "model": "trapexpansion:block/detector_on", "x": 270 },
+    "facing=down,powered=true": { "model": "trapexpansion:block/detector_on", "x": 90 },
+    "facing=north,powered=true": { "model": "trapexpansion:block/detector_on" },
+    "facing=south,powered=true": { "model": "trapexpansion:block/detector_on", "y": 180 },
+    "facing=west,powered=true": { "model": "trapexpansion:block/detector_on", "y": 270 },
+    "facing=east,powered=true": { "model": "trapexpansion:block/detector_on", "y": 90 }
   }
 }

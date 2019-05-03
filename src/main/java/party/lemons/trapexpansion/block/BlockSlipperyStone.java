@@ -1,21 +1,16 @@
 package party.lemons.trapexpansion.block;
 
-import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.util.ResourceLocation;
-import party.lemons.trapexpansion.item.IModel;
+import party.lemons.lemonlib.item.IItemModel;
 
 /**
  * Created by Sam on 18/08/2018.
  */
-public class BlockSlipperyStone extends BlockSpiderProof implements IModel
+public class BlockSlipperyStone extends BlockSpiderProof implements IItemModel
 {
-	public BlockSlipperyStone()
+	public BlockSlipperyStone(Properties properties)
 	{
-		super(Material.ROCK);
-
-		this.slipperiness = 0.97F;
-		this.setSoundType(SoundType.GLASS);
+		super(properties);
 	}
 
 	@Override

@@ -4,16 +4,16 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.registries.ObjectHolder;
 import party.lemons.trapexpansion.TrapExpansion;
 
 /**
  * Created by Sam on 18/08/2018.
  */
-@Mod.EventBusSubscriber(modid = TrapExpansion.MODID)
-@GameRegistry.ObjectHolder(TrapExpansion.MODID)
+@Mod.EventBusSubscriber(modid = TrapExpansion.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@ObjectHolder(TrapExpansion.MODID)
 public class TrapExpansionSounds
 {
 	public static final SoundEvent SPIKE_OUT_1 = SoundEvents.BLOCK_ANVIL_BREAK;

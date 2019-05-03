@@ -1,0 +1,27 @@
+{
+  "result": {
+    "item": "trapexpansion:fan",
+    "count": 1
+  },
+  "pattern": [
+    "CWC",
+    "WIW",
+    "RWR"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "tag" : "forge:ingots/iron"
+    },
+    "R": {
+      "tag" : "forge:dusts/redstone"
+
+    },
+    "C":{
+      "tag" : "forge:cobblestone"
+    },
+    "W":{
+      "tag": "minecraft:planks"
+    }
+  }
+}

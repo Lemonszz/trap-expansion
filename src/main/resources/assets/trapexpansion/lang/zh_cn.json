@@ -1,0 +1,14 @@
+{
+  "trapexpansion.subtitle.spikeout": "钉刺叮当作响",
+  "block.trapexpansion.spike_trap": "钉刺陷阱",
+  "block.trapexpansion.spike_trap_wall": "钉刺陷阱",
+  "block.trapexpansion.slippery_stone": "滑滑石",
+  "block.trapexpansion.fan": "风扇",
+
+  "trapexpansion.tip.spiderproof": "防止蜘蛛攀爬",
+
+  "death.attack.trapexpansion.spike": "%1$s 被刺穿了",
+  "death.attack.trapexpansion.spike.player": "%1$s 被 %2$s 刺穿了",
+
+  "itemGroup.trapexpansion": "Trap Expansion"
+}

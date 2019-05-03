@@ -1,24 +1,36 @@
 package party.lemons.trapexpansion.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.properties.PropertyInteger;
+import net.minecraft.block.IBucketPickupHandler;
+import net.minecraft.block.ILiquidContainer;
 import net.minecraft.block.state.BlockFaceShape;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.IFluidState;
+import net.minecraft.init.Fluids;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.DirectionProperty;
+import net.minecraft.state.IntegerProperty;
+import net.minecraft.state.StateContainer;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.state.properties.ChestType;
 import net.minecraft.util.*;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.math.shapes.VoxelShapes;
+import net.minecraft.world.IBlockReader;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
-import party.lemons.trapexpansion.item.IModel;
+import net.minecraft.world.chunk.BlockStateContainer;
+import party.lemons.lemonlib.item.IItemModel;
 import party.lemons.trapexpansion.misc.DamageSourceSpike;
 import party.lemons.trapexpansion.sound.TrapExpansionSounds;
 
@@ -28,63 +40,69 @@ import java.util.Random;
 /**
  * Created by Sam on 18/08/2018.
  */
-public class BlockSpikeTrapVertical extends Block implements IModel
+public class BlockSpikeTrapVertical extends Block implements IItemModel, ILiquidContainer, IBucketPickupHandler
 {
-	protected static final AxisAlignedBB AABB_UP = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
-	protected static final AxisAlignedBB AABB_DOWN = new AxisAlignedBB(0.0D, 0.9D, 0.0D, 1.0D, 1.0D, 1.0D);
+	protected static final VoxelShape AABB_UP = VoxelShapes.create(0.0D, 0.0D, 0.0D, 1.0D, 0.1D, 1.0D);
+	protected static final VoxelShape AABB_DOWN = VoxelShapes.create(0.0D, 0.9D, 0.0D, 1.0D, 1.0D, 1.0D);
+	protected static final AxisAlignedBB FULL_BLOCK_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.0D, 1.0D, 1.0D, 1.0D);
 
-	public static final PropertyInteger OUT = PropertyInteger.create("out", 0, 2);
-	public static final PropertyDirection DIRECTION = PropertyDirection.create("direction", EnumFacing.Plane.VERTICAL);
+	public static final IntegerProperty OUT = IntegerProperty.create("out", 0, 2);
+	public static final DirectionProperty DIRECTION = DirectionProperty.create("direction", EnumFacing.Plane.VERTICAL);
+	public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
 
-	public BlockSpikeTrapVertical()
+	public BlockSpikeTrapVertical(Properties properties)
 	{
-		super(Material.IRON);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(OUT, 0).withProperty(DIRECTION, EnumFacing.UP));
+		super(properties);
+		this.setDefaultState(this.stateContainer.getBaseState().with(OUT, 0).with(DIRECTION, EnumFacing.UP).with(WATERLOGGED, false));
 	}
 
-	public BlockSpikeTrapVertical(boolean child)
+	public BlockSpikeTrapVertical(Properties properties, boolean child)
 	{
-		super(Material.IRON);
+		super(properties);
 	}
 
-	public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn)
+	public void onEntityCollision(IBlockState state, World worldIn, BlockPos pos, Entity entityIn)
 	{
-		if (!worldIn.isRemote && !entityIn.isDead)
+		if (!worldIn.isRemote && entityIn.isAlive())
 		{
-			int i = state.getValue(OUT);
+			int i = state.get(OUT);
 
 			if (i == 0)
 			{
 				this.updateState(worldIn, pos, state, i);
 			}
 
-			if(i == 2 && worldIn.getTotalWorldTime() % 5 == 0)
+			if(i == 2 && worldIn.getGameTime() % 5 == 0)
 			{
 				entityIn.attackEntityFrom(DamageSourceSpike.SPIKE, 3);
 			}
 		}
 	}
 
-	public Item getItemDropped(IBlockState state, Random rand, int fortune)
+	@Override
+	public IItemProvider getItemDropped(IBlockState state, World worldIn, BlockPos pos, int fortune)
 	{
 		return Item.getItemFromBlock(TrapExpansionBlocks.SPIKE_TRAP);
 	}
 
-	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player)
+	@Override
+	public ItemStack getPickBlock(IBlockState state, RayTraceResult target, IBlockReader world, BlockPos pos, EntityPlayer player)
 	{
 		return new ItemStack(TrapExpansionBlocks.SPIKE_TRAP);
 	}
 
+
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
 	{
-		worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
+		worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
 	}
 
-	public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+	@Override
+	public void tick(IBlockState state, World worldIn, BlockPos pos, Random random)
 	{
 		if (!worldIn.isRemote)
 		{
-			int i = state.getValue(OUT);
+			int i = state.get(OUT);
 
 			if (i > 0 || worldIn.isBlockPowered(pos))
 			{
@@ -92,6 +110,7 @@ public class BlockSpikeTrapVertical extends Block implements IModel
 			}
 		}
 	}
+
 
 	protected void updateState(World worldIn, BlockPos pos, IBlockState state, int outValue)
 	{
@@ -117,10 +136,10 @@ public class BlockSpikeTrapVertical extends Block implements IModel
 			worldIn.playSound(null, pos, sound, SoundCategory.BLOCKS, 1F, 0.5F + (worldIn.rand.nextFloat() / 2));
 		}
 
-		worldIn.setBlockState(pos, state.withProperty(OUT, endValue));
+		worldIn.setBlockState(pos, state.with(OUT, endValue));
 		worldIn.markBlockRangeForRenderUpdate(pos, pos);
 		if(endValue != 2 || !powered)
-			worldIn.scheduleUpdate(new BlockPos(pos), this, this.tickRate(worldIn));
+			worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
 	}
 
 	protected boolean hasEntity(World worldIn, BlockPos pos, IBlockState state)
@@ -140,11 +159,13 @@ public class BlockSpikeTrapVertical extends Block implements IModel
 		return false;
 	}
 
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+	@Override
+	public void onBlockAdded(IBlockState state, World worldIn, BlockPos pos, IBlockState oldState)
 	{
-		if(state.getValue(OUT) > 0 || worldIn.isBlockPowered(pos))
-			worldIn.scheduleUpdate(new BlockPos(pos), this, this.tickRate(worldIn));
+		if(state.get(OUT) > 0 || worldIn.isBlockPowered(pos))
+			worldIn.getPendingBlockTicks().scheduleTick(new BlockPos(pos), this, this.tickRate(worldIn));
 	}
+
 
 	public int tickRate(World worldIn)
 	{
@@ -158,51 +179,37 @@ public class BlockSpikeTrapVertical extends Block implements IModel
 
 	public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos)
 	{
-		return blockState.getValue(OUT);
+		return blockState.get(OUT);
 	}
 
-	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos)
+	public VoxelShape getShape(IBlockState state, IBlockReader worldIn, BlockPos pos)
 	{
-		if(state.getValue(DIRECTION) == EnumFacing.UP)
+		if(state.get(DIRECTION) == EnumFacing.UP)
 			return AABB_UP;
 
 		return AABB_DOWN;
 	}
 
-	public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos)
+	@Override
+	public VoxelShape getRenderShape(IBlockState state, IBlockReader worldIn, BlockPos pos)
 	{
-		return getBoundingBox(blockState, worldIn, pos);
+		return super.getRenderShape(state, worldIn, pos);
 	}
 
 	public boolean isFullCube(IBlockState state)
 	{
 		return false;
 	}
-	public boolean isOpaqueCube(IBlockState state)
-	{
-		return false;
-	}
 
-	public IBlockState getStateFromMeta(int meta)
-	{
-		if(meta <= 2)
-			return this.getDefaultState().withProperty(OUT, meta);
 
-		return this.getStateFromMeta(meta - 3).withProperty(DIRECTION, EnumFacing.DOWN);
-	}
-
-	public int getMetaFromState(IBlockState state)
+	@Override
+	public IBlockState getStateForPlacement(BlockItemUseContext context)
 	{
-		if(state.getValue(DIRECTION) == EnumFacing.UP)
-			return state.getValue(OUT);
-		else
-			return 3 + state.getValue(OUT);
-	}
+		EnumFacing facing = context.getFace();
+		IFluidState ifluidstate = context.getWorld().getFluidState(context.getPos());
 
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-	{
 		if(facing == EnumFacing.DOWN)
-			return this.getDefaultState().withProperty(DIRECTION, EnumFacing.DOWN);
+			return this.getDefaultState().with(DIRECTION, EnumFacing.DOWN).with(WATERLOGGED, Boolean.valueOf(ifluidstate.getFluid() == Fluids.WATER));
 
 		switch(facing)
 		{
@@ -210,23 +217,27 @@ public class BlockSpikeTrapVertical extends Block implements IModel
 			case WEST:
 			case SOUTH:
 			case EAST:
-				return TrapExpansionBlocks.SPIKE_TRAP_WALL.getDefaultState().withProperty(BlockSpikeTrapWall.DIRECTION_WALL, facing);
+				return TrapExpansionBlocks.SPIKE_TRAP_WALL.getDefaultState().with(BlockSpikeTrapWall.DIRECTION_WALL, facing).with(WATERLOGGED, Boolean.valueOf(ifluidstate.getFluid() == Fluids.WATER));
 		}
 
-		return this.getDefaultState();
+
+
+		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(ifluidstate.getFluid() == Fluids.WATER));
 	}
 
-	protected BlockStateContainer createBlockState()
+
+	@Override
+	protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder)
 	{
-		return new BlockStateContainer(this, OUT, DIRECTION);
+		builder.add(OUT, DIRECTION, WATERLOGGED);
 	}
 
-	public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face)
+	public BlockFaceShape getBlockFaceShape(IBlockReader worldIn, IBlockState state, BlockPos pos, EnumFacing face)
 	{
-		if(state.getValue(DIRECTION) == EnumFacing.UP && face == EnumFacing.DOWN)
+		if(state.get(DIRECTION) == EnumFacing.UP && face == EnumFacing.DOWN)
 			return BlockFaceShape.SOLID;
 
-		if(state.getValue(DIRECTION) == EnumFacing.DOWN && face == EnumFacing.UP)
+		if(state.get(DIRECTION) == EnumFacing.DOWN && face == EnumFacing.UP)
 			return BlockFaceShape.SOLID;
 
 
@@ -237,5 +248,46 @@ public class BlockSpikeTrapVertical extends Block implements IModel
 	public ResourceLocation getModelLocation()
 	{
 		return getRegistryName();
+	}
+
+
+	////// Water logging stuff
+
+	public boolean receiveFluid(IWorld worldIn, BlockPos pos, IBlockState state, IFluidState fluidStateIn) {
+		if (!state.get(WATERLOGGED) && fluidStateIn.getFluid() == Fluids.WATER) {
+			if (!worldIn.isRemote()) {
+				worldIn.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)), 3);
+				worldIn.getPendingFluidTicks().scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+			}
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public Fluid pickupFluid(IWorld worldIn, BlockPos pos, IBlockState state) {
+		if (state.get(WATERLOGGED)) {
+			worldIn.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(false)), 3);
+			return Fluids.WATER;
+		} else {
+			return Fluids.EMPTY;
+		}
+	}
+
+	public IFluidState getFluidState(IBlockState state) {
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStillFluidState(false) : super.getFluidState(state);
+	}
+
+	public boolean canContainFluid(IBlockReader worldIn, BlockPos pos, IBlockState state, Fluid fluidIn) {
+		return !state.get(WATERLOGGED) && fluidIn == Fluids.WATER;
+	}
+
+	public IBlockState updatePostPlacement(IBlockState stateIn, EnumFacing facing, IBlockState facingState, IWorld worldIn, BlockPos currentPos, BlockPos facingPos) {
+		if (stateIn.get(WATERLOGGED)) {
+			worldIn.getPendingFluidTicks().scheduleTick(currentPos, Fluids.WATER, Fluids.WATER.getTickRate(worldIn));
+		}
+
+		return super.updatePostPlacement(stateIn, facing, facingState, worldIn, currentPos, facingPos);
 	}
 }

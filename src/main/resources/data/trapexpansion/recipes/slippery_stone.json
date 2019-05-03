@@ -1,21 +1,20 @@
 {
   "result": {
     "item": "trapexpansion:slippery_stone",
-    "count": 1
+    "count": 4
   },
   "pattern": [
     "C C",
     " I ",
     "C C"
   ],
-  "type": "forge:ore_shaped",
+  "type": "minecraft:crafting_shaped",
   "key": {
     "I": {
       "item" : "minecraft:packed_ice"
     },
     "C":{
-      "type": "forge:ore_dict",
-      "ore": "cobblestone"
+      "tag": "forge:cobblestone"
     }
   }
 }

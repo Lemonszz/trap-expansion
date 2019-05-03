@@ -3,11 +3,13 @@ package party.lemons.trapexpansion.block.tileentity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import party.lemons.trapexpansion.block.BlockFan;
+import party.lemons.trapexpansion.block.TrapExpansionBlocks;
 
 import java.util.List;
 
@@ -20,20 +22,25 @@ public class TileEntityFan extends TileEntity implements ITickable
 	private static final float SPEED = 1F;
 	private static final float RANGE = 8F;
 
-	@Override
-	public void update()
+	public TileEntityFan()
 	{
-		if(world.getTotalWorldTime() % STEP_TIME == 0)
+		super(TrapExpansionBlocks.FAN_TYPE);
+	}
+
+	@Override
+	public void tick()
+	{
+		if(world.getGameTime() % STEP_TIME == 0)
 		{
 			IBlockState state = world.getBlockState(pos);
 
 			if(!(state.getBlock() instanceof BlockFan))
 				return;
 
-			if(!state.getValue(BlockFan.POWERED))
+			if(!state.get(BlockFan.POWERED))
 				return;
 
-			EnumFacing facing = state.getValue(BlockFan.FACING);
+			EnumFacing facing = state.get(BlockFan.FACING);
 
 			AxisAlignedBB bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos.offset(facing)).expand(facing.getXOffset() * RANGE, facing.getYOffset() * RANGE, facing.getZOffset() * RANGE);
 			List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bb);

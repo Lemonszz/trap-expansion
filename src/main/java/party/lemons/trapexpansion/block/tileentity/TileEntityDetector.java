@@ -3,11 +3,13 @@ package party.lemons.trapexpansion.block.tileentity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import party.lemons.trapexpansion.block.BlockDetector;
+import party.lemons.trapexpansion.block.TrapExpansionBlocks;
 
 import java.util.List;
 
@@ -19,17 +21,22 @@ public class TileEntityDetector extends TileEntity implements ITickable
 	private static final int STEP_TIME = 4;
 	private static final int RANGE = 5;
 
-	@Override
-	public void update()
+	public TileEntityDetector()
 	{
-		if(world.getTotalWorldTime() % STEP_TIME == 0 && !world.isRemote)
+		super(TrapExpansionBlocks.DETECTOR_TYPE);
+	}
+
+	@Override
+	public void tick()
+	{
+		if(world.getGameTime() % STEP_TIME == 0 && !world.isRemote)
 		{
 			IBlockState state = world.getBlockState(pos);
 
 			if(!(state.getBlock() instanceof BlockDetector))
 				return;
 
-			EnumFacing facing = state.getValue(BlockDetector.FACING);
+			EnumFacing facing = state.get(BlockDetector.FACING);
 			AxisAlignedBB bb = new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(pos.offset(facing)).expand(facing.getXOffset() * RANGE, facing.getYOffset() * RANGE, facing.getZOffset() * RANGE);
 			List<Entity> entities = world.getEntitiesWithinAABB(Entity.class, bb);
 
@@ -61,11 +68,11 @@ public class TileEntityDetector extends TileEntity implements ITickable
 				}
 			}
 
-			boolean powered = state.getValue(BlockDetector.POWERED);
+			boolean powered = state.get(BlockDetector.POWERED);
 
 			if(powered != hasEntity)
 			{
-				world.setBlockState(pos, state.withProperty(BlockDetector.POWERED, hasEntity));
+				world.setBlockState(pos, state.with(BlockDetector.POWERED, hasEntity));
 			}
 		}
 	}

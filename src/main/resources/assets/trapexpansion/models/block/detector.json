@@ -1,0 +1,6 @@
+{
+  "parent": "block/observer",
+  "textures": {
+    "front": "trapexpansion:blocks/detector_front"
+  }
+}

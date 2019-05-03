@@ -1,0 +1,7 @@
+{
+  "parent": "block/observer",
+  "textures": {
+    "front": "trapexpansion:blocks/detector_front",
+    "bottom": "block/observer_back_on"
+  }
+}

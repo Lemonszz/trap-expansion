@@ -1,33 +1,35 @@
 package party.lemons.trapexpansion.block;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Mirror;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import party.lemons.lemonlib.item.IItemModel;
 import party.lemons.trapexpansion.block.tileentity.TileEntityDetector;
-import party.lemons.trapexpansion.item.IModel;
+
+import javax.annotation.Nullable;
 
 /**
  * Created by Sam on 20/08/2018.
  */
-public class BlockDetector extends BlockDirectional implements IModel
+public class BlockDetector extends BlockDirectional implements IItemModel
 {
-	public static final PropertyBool POWERED = PropertyBool.create("powered");
+	public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 
-	public BlockDetector()
+	public BlockDetector(Properties properties)
 	{
-		super(Material.ROCK);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH).withProperty(POWERED, Boolean.valueOf(false)));
+		super(properties);
+		this.setDefaultState(this.stateContainer.getBaseState().with(FACING, EnumFacing.SOUTH).with(POWERED, Boolean.valueOf(false)));
 	}
 
 	public boolean canProvidePower(IBlockState state)
@@ -35,14 +37,14 @@ public class BlockDetector extends BlockDirectional implements IModel
 		return true;
 	}
 
-	public int getStrongPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+	public int getStrongPower(IBlockState blockState, IBlockReader blockAccess, BlockPos pos, EnumFacing side)
 	{
 		return blockState.getWeakPower(blockAccess, pos, side);
 	}
 
-	public int getWeakPower(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side)
+	public int getWeakPower(IBlockState blockState, IBlockReader blockAccess, BlockPos pos, EnumFacing side)
 	{
-		return blockState.getValue(POWERED).booleanValue() && blockState.getValue(FACING) == side ? 15 : 0;
+		return blockState.get(POWERED).booleanValue() && blockState.get(FACING) == side ? 15 : 0;
 	}
 
 	@Override
@@ -51,48 +53,22 @@ public class BlockDetector extends BlockDirectional implements IModel
 		return true;
 	}
 
-	public TileEntity createTileEntity(World world, IBlockState state)
+	@Nullable
+	@Override
+	public TileEntity createTileEntity(IBlockState state, IBlockReader world)
 	{
 		return new TileEntityDetector();
 	}
 
-	protected BlockStateContainer createBlockState()
-	{
-		return new BlockStateContainer(this, FACING, POWERED);
+	protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder) {
+		builder.add(FACING, POWERED);
 	}
 
-	public IBlockState withRotation(IBlockState state, Rotation rot)
+	public IBlockState getStateForPlacement(BlockItemUseContext context)
 	{
-		return state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
+		return this.getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
 	}
 
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-	{
-		return state.withRotation(mirrorIn.toRotation(state.getValue(FACING)));
-	}
-
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-	{
-		return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
-	}
-
-	public int getMetaFromState(IBlockState state)
-	{
-		int i = 0;
-		i = i | state.getValue(FACING).getIndex();
-
-		if(state.getValue(POWERED).booleanValue())
-		{
-			i |= 8;
-		}
-
-		return i;
-	}
-
-	public IBlockState getStateFromMeta(int meta)
-	{
-		return this.getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7)).withProperty(POWERED, Boolean.valueOf((meta & 8) > 0));
-	}
 
 	@Override
 	public ResourceLocation getModelLocation()

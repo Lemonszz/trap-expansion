@@ -6,70 +6,73 @@ package party.lemons.trapexpansion.block;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDirectional;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.init.Particles;
+import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.state.BooleanProperty;
+import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import party.lemons.lemonlib.item.IItemModel;
 import party.lemons.trapexpansion.block.tileentity.TileEntityFan;
-import party.lemons.trapexpansion.item.IModel;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 
-public class BlockFan extends BlockDirectional implements IModel
+public class BlockFan extends BlockDirectional implements IItemModel
 {
-	public static final PropertyBool POWERED = PropertyBool.create("powered");
+	public static final BooleanProperty POWERED = BooleanProperty.create("powered");
 
-	public BlockFan()
+	public BlockFan(Properties properties)
 	{
-		super(Material.ROCK);
-		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.SOUTH).withProperty(POWERED, Boolean.valueOf(false)));
+		super(properties);
+		this.setDefaultState(this.stateContainer.getBaseState().with(FACING, EnumFacing.SOUTH).with(POWERED, Boolean.valueOf(false)));
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void randomDisplayTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
+	@OnlyIn(Dist.CLIENT)
+	public void animateTick(IBlockState stateIn, World worldIn, BlockPos pos, Random rand)
 	{
-		if(stateIn.getValue(POWERED) && rand.nextInt(3) == 0)
+		if(stateIn.get(POWERED) && rand.nextInt(3) == 0)
 		{
-			EnumFacing facing = stateIn.getValue(FACING);
+			EnumFacing facing = stateIn.get(FACING);
 			double xPos = pos.offset(facing).getX() + rand.nextFloat();
 			double yPos = pos.offset(facing).getY() + rand.nextFloat();
 			double zPos = pos.offset(facing).getZ() + rand.nextFloat();
 
-			worldIn.spawnParticle(EnumParticleTypes.CLOUD, xPos, yPos, zPos, facing.getXOffset() / 2F, facing.getYOffset() / 2F, facing.getZOffset() / 2F);
+			worldIn.spawnParticle(Particles.CLOUD, xPos, yPos, zPos, facing.getXOffset() / 2F, facing.getYOffset() / 2F, facing.getZOffset() / 2F);
 		}
 	}
+
 	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos)
 	{
 		boolean powered = worldIn.isBlockPowered(pos) || worldIn.isBlockPowered(pos.up());
 
 		if (powered)
 		{
-			worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-			worldIn.setBlockState(pos, state.withProperty(POWERED, true));
+			worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
+			worldIn.setBlockState(pos, state.with(POWERED, true));
 		}
 		else
 		{
-			if(state.getValue(POWERED))
+			if(state.get(POWERED))
 			{
-				worldIn.scheduleUpdate(pos, this, this.tickRate(worldIn));
-				worldIn.setBlockState(pos, state.withProperty(POWERED, false));
+				worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
+				worldIn.setBlockState(pos, state.with(POWERED, false));
 			}
 		}
 	}
 
-	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
+	public void onBlockAdded(IBlockState state, World worldIn, BlockPos pos, IBlockState p_196259_4_)
 	{
 		if(worldIn.isBlockPowered(pos))
 		{
-			worldIn.scheduleUpdate(new BlockPos(pos), this, this.tickRate(worldIn));
-			worldIn.setBlockState(pos, state.withProperty(POWERED, true));
+			worldIn.getPendingBlockTicks().scheduleTick(pos, this, this.tickRate(worldIn));
+			worldIn.setBlockState(pos, state.with(POWERED, true));
 		}
 	}
 
@@ -79,52 +82,20 @@ public class BlockFan extends BlockDirectional implements IModel
 		return true;
 	}
 
-	public TileEntity createTileEntity(World world, IBlockState state)
+	@Nullable
+	@Override
+	public TileEntity createTileEntity(IBlockState state, IBlockReader world)
 	{
 		return new TileEntityFan();
 	}
 
-	protected BlockStateContainer createBlockState()
+	protected void fillStateContainer(StateContainer.Builder<Block, IBlockState> builder)
 	{
-		return new BlockStateContainer(this, FACING, POWERED);
+		builder.add(FACING, POWERED);
 	}
 
-	public IBlockState withRotation(IBlockState state, Rotation rot)
+	public IBlockState getStateForPlacement(BlockItemUseContext context)
 	{
-		return state.withProperty(FACING, rot.rotate((EnumFacing) state.getValue(FACING)));
-	}
-
-	public IBlockState withMirror(IBlockState state, Mirror mirrorIn)
-	{
-		return state.withRotation(mirrorIn.toRotation((EnumFacing) state.getValue(FACING)));
-	}
-
-	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-	{
-		return this.getDefaultState().withProperty(FACING, EnumFacing.getDirectionFromEntityLiving(pos, placer));
-	}
-
-	public int getMetaFromState(IBlockState state)
-	{
-		int i = 0;
-		i = i | state.getValue(FACING).getIndex();
-
-		if(state.getValue(POWERED).booleanValue())
-		{
-			i |= 8;
-		}
-
-		return i;
-	}
-
-	public IBlockState getStateFromMeta(int meta)
-	{
-		return this.getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7)).withProperty(POWERED, Boolean.valueOf((meta & 8) > 0));
-	}
-
-	@Override
-	public ResourceLocation getModelLocation()
-	{
-		return getRegistryName();
+		return this.getDefaultState().with(FACING, context.getNearestLookingDirection().getOpposite());
 	}
 }

@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "trapexpansion:detector",
+    "count": 1
+  },
+  "pattern": [
+    "CEC",
+    "RRQ",
+    "CCC"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "R": {
+      "tag": "forge:dusts/redstone"
+    },
+    "C":{
+      "tag": "forge:cobblestone"
+    },
+    "Q":{
+      "tag": "forge:gems/quartz"
+    },
+    "E":{
+      "item": "minecraft:ender_pearl"
+    }
+  }
+}

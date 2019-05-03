@@ -1,15 +1,15 @@
 package party.lemons.trapexpansion.misc;
 
-import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import party.lemons.trapexpansion.block.TrapExpansionBlocks;
 
 /**
  * Created by Sam on 19/08/2018.
  */
-public class TrapExpansionTab extends CreativeTabs
+public class TrapExpansionTab extends ItemGroup
 {
-	public static final CreativeTabs INSTANCE = new TrapExpansionTab();
+	public static final ItemGroup INSTANCE = new TrapExpansionTab();
 
 	public TrapExpansionTab()
 	{

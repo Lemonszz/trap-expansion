@@ -1,20 +1,23 @@
 package party.lemons.trapexpansion.block;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.MapColor;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -24,30 +27,45 @@ import java.util.List;
  */
 public class BlockSpiderProof extends Block
 {
-	public BlockSpiderProof(Material blockMaterialIn, MapColor blockMapColorIn)
+	private static final double OFFSET_AMT = 0.1D;
+	protected static final VoxelShape SHAPE = Block.makeCuboidShape(OFFSET_AMT, OFFSET_AMT, OFFSET_AMT, 16.0D - OFFSET_AMT, 16.0D - OFFSET_AMT, 16.0D - OFFSET_AMT);
+	protected static final VoxelShape SHAPE_FULL = Block.makeCuboidShape(0, 0, 0, 16.0D, 16.0D, 16.0D);
+
+
+	public BlockSpiderProof(Properties properties)
 	{
-		super(blockMaterialIn, blockMapColorIn);
+		super(properties);
 	}
 
-	public BlockSpiderProof(Material materialIn)
-	{
-		super(materialIn);
+	public VoxelShape getShape(IBlockState state, IBlockReader worldIn, BlockPos pos) {
+		return SHAPE_FULL;
+	}
+	public VoxelShape getCollisionShape(IBlockState state, IBlockReader worldIn, BlockPos pos) {
+		return SHAPE;
 	}
 
 	@Override
-	public void addCollisionBoxToList(IBlockState state, World worldIn, BlockPos pos, AxisAlignedBB entityBox, List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean isActualState)
+	public void onEntityCollision(IBlockState state, World worldIn, BlockPos pos, Entity entityIn)
 	{
+		super.onEntityCollision(state, worldIn, pos, entityIn);
+
 		if(entityIn instanceof EntitySpider)
 		{
 			((EntitySpider) entityIn).setBesideClimbableBlock(false);
 		}
-
-		super.addCollisionBoxToList(state, worldIn, pos, entityBox, collidingBoxes, entityIn, isActualState);
 	}
 
-	@SideOnly(Side.CLIENT)
-	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, ITooltipFlag advanced)
+	public BlockFaceShape getBlockFaceShape(IBlockReader worldIn, IBlockState state, BlockPos pos, EnumFacing face) {
+		return BlockFaceShape.SOLID;
+	}
+
+
+	@OnlyIn(Dist.CLIENT)
+	public void addInformation(ItemStack stack, @Nullable IBlockReader worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
 	{
-		tooltip.add(TextFormatting.DARK_GRAY + I18n.format("trapexpansion.tip.spiderproof"));
+		TextComponentTranslation translation = new TextComponentTranslation("trapexpansion.tip.spiderproof");
+		translation.setStyle(new Style().setColor(TextFormatting.DARK_GRAY));
+
+		tooltip.add(translation);
 	}
 }
